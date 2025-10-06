@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using FDAutomationProject.Utilities;
+using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
@@ -84,6 +85,18 @@ namespace FDAutomationProject.Pages
             _driver.FindElement(coockieAcceptbtn).Click();
         }
 
+        public void ReadPageHeader(string header)
+        {
+            string head = _driver.FindElement(Heading).Text;
+            if(head.Contains( header))
+            {
+                Reporter.LogPass("Test Case Passed");
+            }
+            else
+            {
+                Reporter.LogFail("Test Case Fail");
+            }
+        }
         public void DataInputinLoanAmount(decimal data)
         {
             string dataS = data.ToString();
@@ -121,10 +134,10 @@ namespace FDAutomationProject.Pages
             Console.WriteLine($"\nACTION: Setting Loan Parameters: Amount={amount}, Rate={rate}%, Tenure={tenure} months.");
         }
 
-        public string ExpectedEMI(decimal EMIAmt)
+        public string ExpectedEMI(string EMIAmt)
         {
             Console.WriteLine($"Expected EMI is: {EMIAmt}");
-            string EMIAmtS = EMIAmt.ToString();
+            string EMIAmtS = EMIAmt;
             return EMIAmtS;
         }
 

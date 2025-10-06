@@ -42,3 +42,4 @@ D:\AT\FDAutomationProject\FDAutomationProject\FDAutomationProject\bin\Debug\net9
 D:\AT\FDAutomationProject\FDAutomationProject\FDAutomationProject\obj\Debug\net9.0\FDAutoma.FF275DFB.Up2Date
 D:\AT\FDAutomationProject\FDAutomationProject\FDAutomationProject\obj\Debug\net9.0\FDAutomationProject.genruntimeconfig.cache
 D:\AT\FDAutomationProject\FDAutomationProject\FDAutomationProject\obj\Debug\net9.0\ref\FDAutomationProject.dll
+D:\AT\FDAutomationProject\FDAutomationProject\FDAutomationProject\obj\Debug\net9.0\FDAutomationProject.sourcelink.json
