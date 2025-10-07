@@ -85,16 +85,16 @@ namespace FDAutomationProject.Pages
             _driver.FindElement(coockieAcceptbtn).Click();
         }
 
-        public void ReadPageHeader(string header)
+        public void ReadPageHeader(string header, string pmsg)
         {
             string head = _driver.FindElement(Heading).Text;
-            if(head.Contains( header))
+            if (head.Contains(header))
             {
-                Reporter.LogPass("Test Case Passed");
+                Reporter.LogPass(pmsg + "Read Header Case Pass");
             }
             else
             {
-                Reporter.LogFail("Test Case Fail");
+                Reporter.LogFail("Read Header Case Fail");
             }
         }
         public void DataInputinLoanAmount(decimal data)
@@ -129,21 +129,20 @@ namespace FDAutomationProject.Pages
             _driver.FindElement(bodyTag).Click();
 
         }
-        public void SetPLoanParameters(string amount, string rate, string tenure)
+        public void SetPLoanParameters(string amount, string rate, string tenure, string expEMI)
         {
-            Console.WriteLine($"\nACTION: Setting Loan Parameters: Amount={amount}, Rate={rate}%, Tenure={tenure} months.");
+            Console.WriteLine($"\nACTION: Setting \nLoan Parameters: Amount={amount}, \nRate={rate}%, \nTenure={tenure} months, \nExpectedEMI={expEMI} months");
         }
 
         public string ExpectedEMI(string EMIAmt)
-        {
-            Console.WriteLine($"Expected EMI is: {EMIAmt}");
+        {            
             string EMIAmtS = EMIAmt;
             return EMIAmtS;
         }
 
         public string getEMIfromUI()
         {
-            string EMI = _driver.FindElement(coockieAcceptbtn).Text;
+            string EMI = _driver.FindElement(EMIResult).Text;
             return EMI;
         }
 

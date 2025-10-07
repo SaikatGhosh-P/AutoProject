@@ -142,33 +142,179 @@ namespace FDAutomationProject
 
             if (category == "Personal Loan Test" && mode == "RunAllTest")
             {
-                Console.WriteLine("Executing all defined Personal Loan EMI tests (e.g., BVA_001, BVA_002, CAL_001)...");
-                // Example of how to call a specific test if it were in a non-NUnit class:
-                // var runner = new EmiCalculatorTests();
-                // runner.BVA_001_VerifyMinimumLoanAmountCalculation();
+                IWebDriver driver = null;
+                driver = WebDriverFactory.GetDriver("Chrome");
+                driver.Manage().Window.Maximize();
+
+                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/personal-loan-emi-calculator?cta=calculator-life-goal-card1");
+
+
+                PLTest tests = new PLTest(driver);
+                tests.RunAllTests();
+
+                Reporter.PrintSummary();
             }
             else if (category == "Personal Loan Test" && mode == "RunByManualValuePut")
             {
-                Console.WriteLine("Executing specific test scenario by accepting manual inputs...");
-                // Example: Prompt user for Loan Amount, Rate, and Tenure here.
+                IWebDriver driver = null;
+                driver = WebDriverFactory.GetDriver("Chrome");
+                driver.Manage().Window.Maximize();
+
+                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/personal-loan-emi-calculator?cta=calculator-life-goal-card1");
+
+                Console.WriteLine("=== Loan Details Input ===");
+
+                // Get Loan Amount
+                decimal loanAmount = GetDecimalInput("Enter Loan Amount (e.g., 50000): ");
+
+                // Get Interest Rate
+                decimal interestRate = GetDecimalInput("Enter Annual Interest Rate (%) (e.g., 9): ");
+
+                // Get Tenure in Months
+                int tenureMonths = GetIntInput("Enter Tenure in Months (e.g., 24): ");
+                
+                string expectedEMI = GetStringInput("Enter Expected EMI (e.g., 25,939): ");
+
+
+                string loanStr = loanAmount.ToString("F2");       
+                string rateStr = interestRate.ToString("F2");
+                string tenureStr = tenureMonths.ToString("F0");
+                
+
+                PLTest tests = new PLTest(driver);
+                tests.RunTestFromUserDefineValue(loanStr, rateStr, tenureStr, expectedEMI);
+                Reporter.PrintSummary();
+
+                static decimal GetDecimalInput(string prompt)
+                {
+                    decimal value;
+                    while (true)
+                    {
+                        Console.Write(prompt);
+                        if (decimal.TryParse(Console.ReadLine(), out value) && value > 0)
+                            return value;
+                        Console.WriteLine("Invalid input. Please enter a positive decimal.");
+                    }
+                }
+
+                static int GetIntInput(string prompt)
+                {
+                    int value;
+                    while (true)
+                    {
+                        Console.Write(prompt);
+                        if (int.TryParse(Console.ReadLine(), out value) && value > 0)
+                            return value;
+                        Console.WriteLine("Invalid input. Please enter a positive integer.");
+                    }
+                }
+
+                static string GetStringInput(string prompt, bool allowEmpty = false)
+                {
+                    string input;
+                    while (true)
+                    {
+                        Console.Write(prompt);
+                        input = Console.ReadLine()?.Trim();
+
+                        if (!allowEmpty && string.IsNullOrEmpty(input))
+                        {
+                            Console.WriteLine("Input cannot be empty. Please try again.");
+                            continue;
+                        }
+
+                        return input;
+                    }
+                }
+
+
             }
             else if (category == "Home Loan Test" && mode == "RunAllTest")
             {
                 IWebDriver driver = null;
-                driver = WebDriverFactory.GetDriver("Chrome"); // Custom method to setup Chrome/Edge
+                driver = WebDriverFactory.GetDriver("Chrome"); 
                 driver.Manage().Window.Maximize();
-                //driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/fd-calculator?cta=calculators-life-goal-card3");
+                
                 driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/home-loan-emi-calculator?cta=calculator-life-goal-card2");
 
-                // 2. Execution: Run the tests
-                //FDTests tests = new FDTests(driver);
+                
                 HLTest tests = new HLTest(driver);
                 tests.RunAllTests();
+
+                Reporter.PrintSummary();
             }
             else if (category == "Home Loan Test" && mode == "RunByManualValuePut")
             {
-                Console.WriteLine("Executing specific test scenario by accepting manual inputs...");
-                // Example: Prompt user for Loan Amount, Rate, and Tenure here.
+                IWebDriver driver = null;
+                driver = WebDriverFactory.GetDriver("Chrome");
+                driver.Manage().Window.Maximize();
+
+                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/home-loan-emi-calculator?cta=calculator-life-goal-card2");
+
+                Console.WriteLine("=== Loan Details Input ===");
+
+                // Get Loan Amount
+                decimal loanAmount = GetDecimalInput("Enter Loan Amount (e.g., 1000000): ");
+
+                // Get Interest Rate
+                decimal interestRate = GetDecimalInput("Enter Annual Interest Rate (%) (e.g., 9): ");
+
+                // Get Tenure in Months
+                int tenureMonths = GetIntInput("Enter Tenure in Years (e.g., 30): ");
+
+                string expectedEMI = GetStringInput("Enter Expected EMI (e.g., 8,046): ");
+
+
+                string loanStr = loanAmount.ToString();
+                string rateStr = interestRate.ToString();
+                string tenureStr = tenureMonths.ToString();
+
+
+                HLTest tests = new HLTest(driver);
+                tests.RunTestFromUserDefineValue(loanStr, rateStr, tenureStr, expectedEMI);
+                Reporter.PrintSummary();
+
+                static decimal GetDecimalInput(string prompt)
+                {
+                    decimal value;
+                    while (true)
+                    {
+                        Console.Write(prompt);
+                        if (decimal.TryParse(Console.ReadLine(), out value) && value > 0)
+                            return value;
+                        Console.WriteLine("Invalid input. Please enter a positive decimal.");
+                    }
+                }
+
+                static int GetIntInput(string prompt)
+                {
+                    int value;
+                    while (true)
+                    {
+                        Console.Write(prompt);
+                        if (int.TryParse(Console.ReadLine(), out value) && value > 0)
+                            return value;
+                        Console.WriteLine("Invalid input. Please enter a positive integer.");
+                    }
+                }
+
+                static string GetStringInput(string prompt, bool allowEmpty = false)
+                {
+                    string input;
+                    while (true)
+                    {
+                        Console.Write(prompt);
+                        input = Console.ReadLine()?.Trim();
+
+                        if (!allowEmpty && string.IsNullOrEmpty(input))
+                        {
+                            Console.WriteLine("Input cannot be empty. Please try again.");
+                            continue;
+                        }
+
+                        return input;
+                    }
+                }
             }
             else if (category == "FD Calculator Test" && mode == "RunAllTest")
             {

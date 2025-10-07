@@ -2,6 +2,7 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Edge;
+using OpenQA.Selenium.Interactions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,7 +29,15 @@ namespace FDAutomationProject.Drivers
                         var chromeService = ChromeDriverService.CreateDefaultService(driverPath);
                         var chromeOptions = new ChromeOptions();
                         // Optional: Add common options here (e.g., headless, incognito)
-                        // chromeOptions.AddArguments("start-maximized"); 
+                        chromeOptions.AddArgument("--disable-background-networking");
+                        chromeOptions.AddArgument("--disable-default-apps");
+                        chromeOptions.AddArgument("--disable-extensions");
+                        chromeOptions.AddArgument("--disable-sync");
+                        chromeOptions.AddArgument("--disable-notifications");
+                        chromeOptions.AddArgument("--disable-popup-blocking");
+                        chromeOptions.AddArgument("--no-first-run");
+                        chromeOptions.AddArgument("--no-default-browser-check");
+                        chromeOptions.AddArgument("--disable-component-update");
 
                         driver = new ChromeDriver(chromeService, chromeOptions);
                         break;

@@ -1,4 +1,5 @@
-﻿using OpenQA.Selenium;
+﻿using FDAutomationProject.Utilities;
+using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,9 +21,11 @@ namespace FDAutomationProject.Pages
         private By Tenure => By.XPath(".//input[@id='tenure']");
         private By CalculateButton => By.XPath(".//*[@id='calculateBtn']");
         private By EMIResult => By.XPath(".//div[@class='finalResult']/span[@id='lblEMIAmt']");
-        private By PrincipleAmt => By.XPath(".//div[@class='finalResult']/span[@id='lblEMIAmt']");
-        private By InterestAmt => By.XPath(".//div[@class='finalResult']/span[@id='lblEMIAmt']");
-       
+        private By PrincipleAmt => By.XPath(".//div[@class='semiColmn princAmt']/div/span[@id='princAmt']");
+        private By InterestAmt => By.XPath(".//div[@class='semiColmn intAmt']/div/span[@id='intrAmt']]");
+
+        private By TotPayAmt => By.XPath(".//div[@class='semiColmn totPay']/div/span[@id='totalPayAmt']");
+
 
         // 2. Constructor
         public PLCalculatorPage(IWebDriver driver)
@@ -81,5 +84,84 @@ namespace FDAutomationProject.Pages
         {
             _driver.FindElement(coockieAcceptbtn).Click();
         }
+
+        public void ReadPageHeader(string header,string pmsg)
+        {
+            string head = _driver.FindElement(Heading).Text;
+            if (head.Contains(header))
+            {
+                Reporter.LogPass(pmsg + "Read Header Case Pass");
+            }
+            else
+            {
+                Reporter.LogFail("Read Header Case Fail");
+            }
+        }
+        public void DataInputinLoanAmount(decimal data)
+        {
+            string dataS = data.ToString();
+            _driver.FindElement(LoanAmount).Click();
+            _driver.FindElement(LoanAmount).SendKeys(Keys.Control + "a");
+            _driver.FindElement(LoanAmount).SendKeys(Keys.Delete);
+            _driver.FindElement(LoanAmount).SendKeys(dataS);
+            _driver.FindElement(bodyTag).Click();
+
+        }
+
+        public void DataInputinInterestRate(decimal data)
+        {
+            string dataS = data.ToString();
+            _driver.FindElement(InterestRate).Click();
+            _driver.FindElement(InterestRate).SendKeys(Keys.Control + "a");
+            _driver.FindElement(InterestRate).SendKeys(Keys.Delete);
+            _driver.FindElement(InterestRate).SendKeys(dataS);
+            _driver.FindElement(bodyTag).Click();
+
+        }
+
+        public void DataInputinTenure(decimal data)
+        {
+            string dataS = data.ToString();
+            _driver.FindElement(Tenure).Click();
+            _driver.FindElement(Tenure).SendKeys(Keys.Control + "a");
+            _driver.FindElement(Tenure).SendKeys(Keys.Delete);
+            _driver.FindElement(Tenure).SendKeys(dataS);
+            _driver.FindElement(bodyTag).Click();
+
+        }
+        public void SetPLoanParameters(string amount, string rate, string tenure ,string expEMI)
+        {
+            Console.WriteLine($"\nACTION: Setting \nLoan Parameters: Amount={amount}, \nRate={rate}%, \nTenure={tenure} months, \nExpectedEMI={expEMI} months");
+        }
+
+        public string ExpectedEMI(string EMIAmt)
+        {
+            string EMIAmtS = EMIAmt;
+            return EMIAmtS;
+        }
+
+        public string getEMIfromUI()
+        {
+            string EMI = _driver.FindElement(EMIResult).Text;
+            return EMI;
+        }
+
+        public string getPrincipleAmt()
+        {
+            string principleAmt = _driver.FindElement(PrincipleAmt).Text;
+            return principleAmt;
+        }
+
+        public string getInterestAmt()
+        {
+            string interestAmt = _driver.FindElement(InterestAmt).Text;
+            return interestAmt;
+        }
+        public string getTotalPayable()
+        {
+            string totPayable = _driver.FindElement(TotPayAmt).Text;
+            return totPayable;
+        }
+        
     }
 }
