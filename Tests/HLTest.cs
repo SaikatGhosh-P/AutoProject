@@ -53,6 +53,10 @@ namespace FDAutomationProject.Tests
             {
                 Reporter.LogPass("Both Generated and expected EMI are same!");
             }
+            else
+            {
+                Reporter.LogFail("Expexted EMI and Generated EMI are not Same..");
+            }
 
 
         }
@@ -88,6 +92,10 @@ namespace FDAutomationProject.Tests
             if (expEMi == emi)
             {
                 Reporter.LogPass("Both Generated and expected EMI are same!");
+            }
+            else
+            {
+                Reporter.LogFail("Expexted EMI and Generated EMI are not Same..");
             }
         }
     }
