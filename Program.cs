@@ -318,15 +318,55 @@ namespace FDAutomationProject
             }
             else if (category == "FD Calculator Test" && mode == "RunAllTest")
             {
-                Console.WriteLine("Executing all defined Personal Loan EMI tests (e.g., BVA_001, BVA_002, CAL_001)...");
-                // Example of how to call a specific test if it were in a non-NUnit class:
-                // var runner = new EmiCalculatorTests();
-                // runner.BVA_001_VerifyMinimumLoanAmountCalculation();
+                IWebDriver driver = null;
+                driver = WebDriverFactory.GetDriver("Chrome");
+                driver.Manage().Window.Maximize();
+
+                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/fd-calculator?cta=calculators-life-goal-card3");
+
+
+                FDTests tests = new FDTests(driver);
+                tests.RunAllTests();
+
+                Reporter.PrintSummary();
             }
             else if (category == "FD Calculator Test" && mode == "RunByManualValuePut")
             {
-                Console.WriteLine("Executing specific test scenario by accepting manual inputs...");
-                // Example: Prompt user for Loan Amount, Rate, and Tenure here.
+                IWebDriver driver = null;
+                driver = WebDriverFactory.GetDriver("Chrome");
+                driver.Manage().Window.Maximize();
+
+                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/fd-calculator?cta=calculators-life-goal-card3");
+
+                Console.WriteLine("--- User Input for FD Program ---");
+
+                // 2. Prompt for and read the first input: TOC
+                Console.Write("Enter Type Of Customer (Ex: se, no): ");
+                string toc = Console.ReadLine();
+
+                // 3. Prompt for and read the second input: IPT
+                Console.Write("Enter value for Interest Payout Type (Ex: re, qu, mo, sh): ");
+                string ipt = Console.ReadLine();
+
+                // 4. Prompt for and read the third input: AD
+                Console.Write("Enter the value for AD (Ex: 5000): ");
+                string ad = Console.ReadLine();
+
+                // 5. Prompt for and read the fourth input: years
+                Console.Write("Enter the value for years (Ex: 1 to 10): ");
+                string years = Console.ReadLine();
+
+                // 6. Prompt for and read the fifth input: months
+                Console.Write("Enter the value for months (Ex: 1 to 11): ");
+                string months = Console.ReadLine();
+
+                // 7. Prompt for and read the sixth input: days
+                Console.Write("Enter the value for days: ");
+                string days = Console.ReadLine();
+
+                
+                FDTests tests = new FDTests(driver);
+                tests.Test_002_TestFromPredefinedValue(toc, ipt, ad, years, months, days);
             }
             else if (category == "Credit Card Test" && mode == "RunAllTest")
             {

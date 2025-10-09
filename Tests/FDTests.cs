@@ -1,6 +1,7 @@
 ﻿using FDAutomationProject.Pages;
 using FDAutomationProject.Utilities;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,60 +24,140 @@ namespace FDAutomationProject.Tests
 
         public void RunAllTests()
         {
-            Test_001_SeniorCitizenRateChange();
-            Test_002_MinimumAmountValidation();
+
+            Test_reinvestment_with_predefine_value_forSenior();
+            Test_quaterlyPayout_with_predefine_value_forSenior();
+            Test_monthlyPayout_with_predefine_value_forSenior();
+            //Test_002_MinimumAmountValidation();
             // ... Call all other test methods here
         }
 
         // Test Case TC_FD_001 equivalent
-        public void Test_001_SeniorCitizenRateChange()
+         public void Test_reinvestment_with_predefine_value_forSenior()
         {
-            Reporter.LogInfo("Starting Test 001: Verify Senior Citizen Rate Increase.");
+            Thread.Sleep(3000);
+            _fdPage.CookieAcceptClick();
+            Thread.Sleep(3000);
+            _fdPage.ScrollByPixel(0, 200);
 
-            try
+            _driver.FindElement(By.XPath("//label[text()='Senior Citizen' and @for='radio2']")).Click(); //senior radio
+
+            Thread.Sleep(2000);
+
+            IWebElement InterestPayoutType = _driver.FindElement(By.XPath("//select[@id='FdepType']/option[text()='Reinvestment (Cumulative)']")); //reinvest type
+            SelectElement ele = new SelectElement(InterestPayoutType);
+            ele.SelectByValue("Reinvestment (Cumulative)");
+
+
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(Keys.Control + "a"); //loan amount textbox
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(Keys.Backspace);
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys("6000");
+
+            new SelectElement(_driver.FindElement(By.XPath("//select[@id='tenureYear']"))).SelectByValue("2"); //year dropdown
+
+            new SelectElement(_driver.FindElement(By.XPath("//select[@id='tenureMon']"))).SelectByValue("2"); //month dropdown
+
+            _driver.FindElement(By.Id("tenureDays")).SendKeys(Keys.Control + "a"); //day textbox
+            _driver.FindElement(By.Id("tenureDays")).SendKeys(Keys.Backspace);
+            _driver.FindElement(By.Id("tenureDays")).SendKeys("10");
+
+            string maturityValue = _driver.FindElement(By.XPath(".//span[@class='MatureAmount brandCr']")).Text; //maturityvalue text
+
+            if (maturityValue == "6,927")
             {
-                //Thread.Sleep(3000);
-                //_fdPage.ScrollByPixel(0, -500);
-
-                Thread.Sleep(3000);
-                _fdPage.CookieAcceptClick();
-
-                //Thread.Sleep(3000);
-                _fdPage.ScrollByPixel(0, 400);
-                //_fdPage.ForceClick(_driver, _driver.FindElement(By.XPath(".//label[text()='Normal']/preceding::input[@id='radio1']")));
-
-                Thread.Sleep(3000);
-                // Pre-condition: Get base rate (Normal)
-                string baseRate = _fdPage.GetInterestRate();
-
-                Thread.Sleep(5000);
-                // Step 1: Click on the Senior Citizen radio button.
-                _fdPage.SelectCustomerType("senior citizen");
-                //_fdPage.clickonSenior();
-
-                Thread.Sleep(5000);
-                // Step 2: Get the new rate.
-                string newRate = _fdPage.GetInterestRate();
-
-                // Custom Assertion
-                if (newRate != baseRate && newRate.Contains("3.50%"))
-                {
-                    Reporter.LogPass($"Test 001 Passed. Rate changed from {baseRate} to {newRate}.");
-                }
-                else
-                {
-                    Reporter.LogFail($"Test 001 Failed. Expected rate 3.50%, Actual rate {newRate}.");
-                }
+                Reporter.LogPass("Reinvestment (Cumulative) functionality is working properly");
             }
-            catch (Exception ex)
+            else
             {
-                Reporter.LogError($"Test 001 Exception: {ex.Message}");
+                Reporter.LogFail("Reinvestment (Cumulative) functionality is not working properly");
             }
         }
-
-        public void Test_002_MinimumAmountValidation()
+        public void Test_quaterlyPayout_with_predefine_value_forSenior()
         {
-            Reporter.LogInfo("Starting Test 002: Verify minimum deposit amount validation.");
+            Thread.Sleep(3000);
+            _fdPage.CookieAcceptClick();
+            Thread.Sleep(3000);
+            _fdPage.ScrollByPixel(0, 200);
+
+            _driver.FindElement(By.XPath("//label[text()='Senior Citizen' and @for='radio2']")).Click();
+
+            Thread.Sleep(2000);
+
+            IWebElement InterestPayoutType = _driver.FindElement(By.XPath("//select[@id='FdepType']/option[text()='Reinvestment (Cumulative)']"));
+            SelectElement ele = new SelectElement(InterestPayoutType);
+            ele.SelectByValue("Reinvestment (Cumulative)");
+
+
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(Keys.Control + "a");
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(Keys.Backspace);
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys("10000");
+
+            new SelectElement(_driver.FindElement(By.XPath("//select[@id='tenureYear']"))).SelectByValue("2");
+
+            new SelectElement(_driver.FindElement(By.XPath("//select[@id='tenureMon']"))).SelectByValue("2");
+
+            _driver.FindElement(By.Id("tenureDays")).SendKeys(Keys.Control + "a");
+            _driver.FindElement(By.Id("tenureDays")).SendKeys(Keys.Backspace);
+            _driver.FindElement(By.Id("tenureDays")).SendKeys("10");
+
+            string ipqVal = _driver.FindElement(By.XPath(".//div[@class='column perQuaterCol']/div/span")).Text;
+
+            if (ipqVal == "165")
+            {
+                Reporter.LogPass("Quarterly Payout functionality is working properly");
+            }
+            else
+            {
+                Reporter.LogFail("Quarterly Payout functionality is not working properly");
+            }
+        }
+        public void Test_monthlyPayout_with_predefine_value_forSenior()
+        {
+            Thread.Sleep(3000);
+            _fdPage.CookieAcceptClick();
+            Thread.Sleep(3000);
+            _fdPage.ScrollByPixel(0, 200);
+
+            _driver.FindElement(By.XPath("//label[text()='Senior Citizen' and @for='radio2']")).Click();
+
+            Thread.Sleep(2000);
+
+            IWebElement InterestPayoutType = _driver.FindElement(By.XPath("//select[@id='FdepType']/option[text()='Reinvestment (Cumulative)']"));
+            SelectElement ele = new SelectElement(InterestPayoutType);
+            ele.SelectByValue("Reinvestment (Cumulative)");
+
+
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(Keys.Control + "a");
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(Keys.Backspace);
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys("150000");
+
+            new SelectElement(_driver.FindElement(By.XPath("//select[@id='tenureYear']"))).SelectByValue("2");
+
+            new SelectElement(_driver.FindElement(By.XPath("//select[@id='tenureMon']"))).SelectByValue("2");
+
+            _driver.FindElement(By.Id("tenureDays")).SendKeys(Keys.Control + "a");
+            _driver.FindElement(By.Id("tenureDays")).SendKeys(Keys.Backspace);
+            _driver.FindElement(By.Id("tenureDays")).SendKeys("15");
+
+            string ipqVal = _driver.FindElement(By.XPath(".//div[@class='column perQuaterCol']/div/span")).Text;
+
+            if (ipqVal == "820")
+            {
+                Reporter.LogPass("Quarterly Payout functionality is working properly");
+            }
+            else
+            {
+                Reporter.LogFail("Quarterly Payout functionality is not working properly");
+            }
+        }
+        public void Test_002_TestFromPredefinedValue(string toc,string fdtype, string ad, string yrs, string mnt, string day)
+        {
+            _fdPage.CookieAcceptClick();
+            Thread.Sleep(3000);
+            _fdPage.ScrollByPixel(0, 200);
+            Thread.Sleep(3000);
+
+            _fdPage.Test(toc, fdtype, ad, yrs, mnt, day);
 
             // ... implementation steps using _fdPage methods ...
             // e.g., _fdPage.SetDepositAmount("4999");

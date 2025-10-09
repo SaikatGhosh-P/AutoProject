@@ -1,4 +1,6 @@
-﻿using OpenQA.Selenium;
+﻿using FDAutomationProject.Utilities;
+using OpenQA.Selenium;
+using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System;
 using System.Collections.Generic;
@@ -13,19 +15,24 @@ namespace FDAutomationProject.Pages
         private IWebDriver _driver;
 
         // 1. Locators
+        // 1. Locators
         private By coockieAcceptbtn => By.XPath(".//button[contains(@id,'allow-btn-privy-cmp') and text()='Accept All']");
         private By NormalCustomerRadio => By.XPath(".//label[text()='Normal']/preceding::input[@id='radio1']");
-        //private By SeniorCitizenRadio => By.XPath(".//input[@id='radio2']");
-        //private By SeniorCitizenRadio => By.XPath(".//label[contains(text(),'Senior')]/preceding::input[@id='radio2']");
-        private By SeniorCitizenRadio => By.XPath(".//div[@id='RadioButton']/input[@id='radio2']");
-        private By InterestPayoutDropdown => By.Id("interest-payout-type-id"); // Assuming an ID or use a descriptive XPath
-        private By AmountDepositInput => By.Name("amountDeposit"); // Assuming a name
-        private By OpenFDButton => By.XPath("//button[text()='Open FD']");
+        private By SeniorCitizenRadio => By.XPath("//label[text()='Senior Citizen' and @for='radio2']");
+        private By InterestPayoutDropdown => By.XPath("//select[@id='FdepType']/option[text()='Reinvestment (Cumulative)']");
+        private By AmountDepositInput => By.XPath("//input[@id='loan_amount']");
+        private By teneurYear => By.XPath("//input[@id='loan_amount']");
+        private By teneurMonth => By.XPath("//input[@id='tenureMon']");
+        private By teneurDays => By.XPath("//input[@id='tenureDays']");
+
 
         // Output Locators
-        private By MaturityValueDisplay => By.XPath("//h4[text()='Maturity Value']/following-sibling::span");
-        //private By InterestRateDisplay => By.XPath(".//span[@id='matIntRate']/preceding::span[text()='Rate of Interest*']");
-        private By InterestRateDisplay => By.XPath(".//span[@id='matIntRate']");
+        //private By MaturityValueDisplay => By.XPath(".//span[@class='MatureAmount brandCr' and text()='10,000']");        
+        private By MaturityValueDisplay => By.XPath(".//span[@class='MatureAmount brandCr']");
+        private By InterestRateDisplay => By.XPath(".//span[@class='idRate pull-right']");
+        private By MaturityDate => By.XPath(".//span[@class='maturityDate pull-right']");
+        private By InterestPerQuater => By.XPath(".//span[@class='perQuaterAmt']");
+        private By AgregateInterestAmount => By.XPath(".//span[@class='InterestAmount']");
 
         // 2. Constructor
         public FDCalculatorPage(IWebDriver driver)
@@ -34,14 +41,155 @@ namespace FDAutomationProject.Pages
         }
 
         // 3. Page Methods (Actions)
+        public void agregateInterestAmountValueRead(int matVal)
+        {
+            string matValSE = matVal.ToString();
+            string matValSR = _driver.FindElement(By.XPath($"{AgregateInterestAmount}")).Text;
 
-        
+            if (matValSE != matValSR)
+            {
+                Reporter.LogError($"Expected and Get {AgregateInterestAmount} are not Same!");
+            }
+            else
+            {
+                Reporter.LogPass($"Expected and Get {AgregateInterestAmount} are Same!");
+            }
+        }
+        public void interestRatPerQuaterValueRead(int matVal)
+        {
+            string matValSE = matVal.ToString();
+            string matValSR = _driver.FindElement(By.XPath($"{InterestPerQuater}")).Text;
+
+            if (matValSE != matValSR)
+            {
+                Reporter.LogError($"Expected and Get {InterestPerQuater} are not Same!");
+            }
+            else
+            {
+                Reporter.LogPass($"Expected and Get {InterestPerQuater} are Same!");
+            }
+        }
+        public void interestRateValueRead(int matVal)
+        {
+            string matValSE = matVal.ToString();
+            string matValSR = _driver.FindElement(By.XPath($"{InterestRateDisplay}")).Text;
+
+            if (matValSE != matValSR)
+            {
+                Reporter.LogError($"Expected and Get {InterestRateDisplay} are not Same!");
+            }
+            else
+            {
+                Reporter.LogPass($"Expected and Get {InterestRateDisplay} are Same!");
+            }
+        }
+        public void maturityDateValueRead(int matVal)
+        {
+            string matValSE = matVal.ToString();
+            string matValSR = _driver.FindElement(By.XPath($"{MaturityDate}")).Text;
+
+            if (matValSE != matValSR)
+            {
+                Reporter.LogError($"Expected and Get {MaturityDate} are not Same!");
+            }
+            else
+            {
+                Reporter.LogPass($"Expected and Get {MaturityDate} are Same!");
+            }
+        }
+        public void maturityValueRead(int matVal)
+        {
+            string matValSE = matVal.ToString();
+            string matValSR = _driver.FindElement(By.XPath($"{MaturityValueDisplay}")).Text;
+
+            if (matValSE != matValSR)
+            {
+                Reporter.LogError("Expected and Get Maturity value are not Same!");
+            }
+            else
+            {
+                Reporter.LogPass("Expected and Get Maturity value are Same!");
+            }
+        }
+        public void radiobuttonSelection(string type)
+        {
+            if (type.Contains("se"))
+            {
+                _driver.FindElement(By.XPath("//label[text()='Senior Citizen' and @for='radio2']")).Click();
+            }
+            else
+            {
+                _driver.FindElement(By.XPath("//label[text()='Normal' and @for='radio1']")).Click();
+            }
+        }
+
+        public void fdType_dropdownSelection(string fdType)
+        {
+            if (fdType.Contains("re"))
+            {
+                IWebElement InterestPayoutType = _driver.FindElement(By.XPath("//select[@id='FdepType']/option[text()='Reinvestment (Cumulative)']")); //reinvest type
+                SelectElement ele = new SelectElement(InterestPayoutType);
+                ele.SelectByValue("Reinvestment (Cumulative)");
+            }
+            else if (fdType.Contains("qui"))
+            {
+                IWebElement InterestPayoutType = _driver.FindElement(By.XPath("//select[@id='FdepType']/option[text()='Reinvestment (Cumulative)']")); //reinvest type
+                SelectElement ele = new SelectElement(InterestPayoutType);
+                ele.SelectByValue("Reinvestment (Cumulative)");
+            }
+            else if (fdType.Contains("moi"))
+            {
+                IWebElement InterestPayoutType = _driver.FindElement(By.XPath("//select[@id='FdepType']/option[text()='Reinvestment (Cumulative)']")); //reinvest type
+                SelectElement ele = new SelectElement(InterestPayoutType);
+                ele.SelectByValue("Reinvestment (Cumulative)");
+            }
+            else
+            {
+                IWebElement InterestPayoutType = _driver.FindElement(By.XPath("//select[@id='FdepType']/option[text()='Reinvestment (Cumulative)']")); //reinvest type
+                SelectElement ele = new SelectElement(InterestPayoutType);
+                ele.SelectByValue("Reinvestment (Cumulative)");
+            }
+
+        }
+        public void valueInput_loanAmount(int loanAmt)
+        {
+            string loanAmtS = loanAmt.ToString();
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(Keys.Control + "a");
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(Keys.Backspace);
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(loanAmtS);
+        }
+
+        public void valueInput_tenureDay(decimal tenDay)
+        {
+            string tenDayS = tenDay.ToString();
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(Keys.Control + "a");
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(Keys.Backspace);
+            _driver.FindElement(By.XPath("//input[@id='loan_amount']")).SendKeys(tenDayS);
+        }
+
+        public void setYearDropdoen(int yr)
+        {
+            string yrS = yr.ToString();
+            IWebElement yearDropdownTyp = _driver.FindElement(By.XPath("//select[@id='tenureYear']")); //reinvest type
+            SelectElement ele = new SelectElement(yearDropdownTyp);
+            ele.SelectByValue(yrS);
+        }
+
+        public void setMonthDropdoen(int mon)
+        {
+            string monS = mon.ToString();
+            IWebElement yearDropdownTyp = _driver.FindElement(By.XPath("//select[@id='tenureMon']")); //reinvest type
+            SelectElement ele = new SelectElement(yearDropdownTyp);
+            ele.SelectByValue(monS);
+        }
+
+
         public void ScrollToElementByXpath(IWebDriver driver, string xpathLocator)
         {
             try
             {
                 // 1. Locate the element using the provided XPath
-                IWebElement targetElement = driver.FindElement(By.XPath(xpathLocator));                
+                IWebElement targetElement = driver.FindElement(By.XPath(xpathLocator));
                 IJavaScriptExecutor js = (IJavaScriptExecutor)driver;
                 js.ExecuteScript("arguments[0].scrollIntoView(true);", targetElement);
 
@@ -89,7 +237,7 @@ namespace FDAutomationProject.Pages
             WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
             IWebElement normalElement = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(SeniorCitizenRadio));
             IWebElement seniorElement = wait.Until(SeleniumExtras.WaitHelpers.ExpectedConditions.ElementToBeClickable(SeniorCitizenRadio));
-            
+
 
             if (type.ToLower() == "senior citizen")
             {
@@ -133,6 +281,60 @@ namespace FDAutomationProject.Pages
         public string GetMaturityValue()
         {
             return _driver.FindElement(MaturityValueDisplay).Text;
+        }
+
+        public void Testtu(String TOC, String IPT, String AD, String years, String months, String days)
+        {
+            IWebDriver driver = new ChromeDriver();
+            //driver.Navigate().GoToUrl("https://www.axisbank.com/");
+            //driver.Manage().Window.FullScreen();
+
+            //Thread.Sleep(2000);
+
+            //IWebElement FDCalculator = driver.FindElement(By.XPath("//p[text()='Fixed Deposit ']"));
+            //((IJavaScriptExecutor)driver).ExecuteScript("arguments[0].click();", FDCalculator);
+
+            //driver.Manage().Window.FullScreen();
+
+            if (TOC == "S")
+            {
+                IWebElement customerTypeDropdown = driver.FindElement(By.XPath("//label[text()='Senior Citizen' and @for='radio2']"));
+                customerTypeDropdown.Click();
+            }
+            else
+            {
+                driver.FindElement(By.XPath("/label[text()='Normal' and @for='radio1']")).Click();
+            }
+
+            IWebElement InterestPayoutType = driver.FindElement(By.XPath("//select[@id='FdepType']"));
+            SelectElement ele = new SelectElement(InterestPayoutType);
+            ele.SelectByText(IPT);
+
+            IWebElement AmountDeposit = driver.FindElement(By.XPath("//input[@id='loan_amount']"));
+            AmountDeposit.Clear();
+            AmountDeposit.SendKeys(AD);
+
+            IWebElement Years = driver.FindElement(By.XPath("//select[@id='tenureYear']"));
+            SelectElement SelectYear = new SelectElement(Years);
+            SelectYear.SelectByValue(years);
+
+            IWebElement Months = driver.FindElement(By.XPath("//select[@id='tenureMon']"));
+            SelectElement SelectMonths = new SelectElement(Months);
+            SelectMonths.SelectByValue(months);
+
+            IWebElement Days = driver.FindElement(By.Id("tenureDays"));
+            Days.Clear();
+            Days.SendKeys(days);
+
+
+
+            Thread.Sleep(2000);
+
+            IWebElement MaturityValue = driver.FindElement(By.XPath("//span[@class='MatureAmount brandCr']"));
+            Console.WriteLine("Monthly calculated EMI is " + MaturityValue.Text);
+
+            driver.Quit();
+
         }
     }
 }
