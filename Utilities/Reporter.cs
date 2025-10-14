@@ -17,6 +17,14 @@ namespace FDAutomationProject.Utilities
             Console.WriteLine($"[INFO] {message}");
         }
 
+        public static void LogInfoError(string message)
+        {
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"[InfoError] {message}");
+            // Optionally take a screenshot here
+        }
+
         public static void LogPass(string message)
         {
             PassCount++;

@@ -14,7 +14,7 @@ namespace FDAutomationProject
             try
             {
                 RunMainMenu();
-                
+
             }
             catch (Exception ex)
             {
@@ -172,14 +172,14 @@ namespace FDAutomationProject
 
                 // Get Tenure in Months
                 int tenureMonths = GetIntInput("Enter Tenure in Months (e.g., 24): ");
-                
+
                 string expectedEMI = GetStringInput("Enter Expected EMI (e.g., 25,939): ");
 
 
-                string loanStr = loanAmount.ToString("F2");       
+                string loanStr = loanAmount.ToString("F2");
                 string rateStr = interestRate.ToString("F2");
                 string tenureStr = tenureMonths.ToString("F0");
-                
+
 
                 PLTest tests = new PLTest(driver);
                 tests.RunTestFromUserDefineValue(loanStr, rateStr, tenureStr, expectedEMI);
@@ -232,12 +232,12 @@ namespace FDAutomationProject
             else if (category == "Home Loan Test" && mode == "RunAllTest")
             {
                 IWebDriver driver = null;
-                driver = WebDriverFactory.GetDriver("Chrome"); 
+                driver = WebDriverFactory.GetDriver("Chrome");
                 driver.Manage().Window.Maximize();
-                
+
                 driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/home-loan-emi-calculator?cta=calculator-life-goal-card2");
 
-                
+
                 HLTest tests = new HLTest(driver);
                 tests.RunAllTests();
 
@@ -319,10 +319,10 @@ namespace FDAutomationProject
             else if (category == "FD Calculator Test" && mode == "RunAllTest")
             {
                 IWebDriver driver = null;
-                driver = WebDriverFactory.GetDriver("Chrome");
-                driver.Manage().Window.Maximize();
+                //driver = WebDriverFactory.GetDriver("Chrome");
+                //driver.Manage().Window.Maximize();
 
-                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/fd-calculator?cta=calculators-life-goal-card3");
+                //driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/fd-calculator?cta=calculators-life-goal-card3");
 
 
                 FDTests tests = new FDTests(driver);
@@ -364,9 +364,9 @@ namespace FDAutomationProject
                 Console.Write("Enter the value for days: ");
                 string days = Console.ReadLine();
 
-                
+
                 FDTests tests = new FDTests(driver);
-                tests.Test_002_TestFromPredefinedValue(toc, ipt, ad, years, months, days);
+                //tests.Test_002_TestFromPredefinedValue(toc, ipt, ad, years, months, days);
             }
             else if (category == "Credit Card Test" && mode == "RunAllTest")
             {
