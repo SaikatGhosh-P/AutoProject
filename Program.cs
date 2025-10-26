@@ -9,12 +9,9 @@ namespace FDAutomationProject
     {
         static void Main(string[] args)
         {
-            IWebDriver driver = null;
-
             try
             {
-                RunMainMenu();
-
+                ShowMainMenu();
             }
             catch (Exception ex)
             {
@@ -22,380 +19,237 @@ namespace FDAutomationProject
             }
             finally
             {
-                // 3. Teardown: Close WebDriver
-                if (driver != null)
-                {
-                    driver.Quit();
-                }
+                PrintColoredSummary();
             }
-
-            Reporter.PrintSummary(); // Custom method to display PASS/FAIL count
         }
 
-        private static void RunMainMenu()
+        private static void ShowMainMenu()
         {
-            bool isRunning = true;
-            while (isRunning)
+            var categories = new Dictionary<int, string>
+            {
+                { 1, "Personal Loan Test" },
+                { 2, "Home Loan Test" },
+                { 3, "FD Calculator Test" },
+                { 4, "Credit Card Test" }
+            };
+
+            while (true)
             {
                 Console.Clear();
                 Console.WriteLine("=============================================");
-                Console.WriteLine("    FUNCTIONAL TEST CATEGORY SELECTION");
+                Console.WriteLine("      FUNCTIONAL TEST CATEGORY SELECTION");
                 Console.WriteLine("=============================================");
-                Console.WriteLine("1. Personal Loan Test");
-                Console.WriteLine("2. Home Loan Test");
-                Console.WriteLine("3. FD Calculator Test");
-                Console.WriteLine("4. Credit Card Test");
+                foreach (var kvp in categories)
+                    Console.WriteLine($"{kvp.Key}. {kvp.Value}");
                 Console.WriteLine("5. Exit Test Runner");
                 Console.WriteLine("=============================================");
-                Console.Write("Enter your choice (1-5): ");
 
-                if (int.TryParse(Console.ReadLine(), out int choice))
+                int choice = GetInt("Enter your choice (1-5): ");
+
+                if (choice == 5)
                 {
-                    switch (choice)
-                    {
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                            RunSubMenu(choice);
-                            break;
-                        case 5:
-                            isRunning = false;
-                            Console.WriteLine("\nExiting Test Runner. Goodbye!");
-                            break;
-                        default:
-                            DisplayError("Invalid choice. Please try again.");
-                            break;
-                    }
+                    Console.WriteLine("\nExiting Test Runner. Goodbye!");
+                    break;
                 }
+
+                if (categories.TryGetValue(choice, out string category))
+                    ShowSubMenu(category);
                 else
-                {
-                    DisplayError("Invalid input. Please enter a number.");
-                }
+                    ShowError("Invalid choice. Please try again.");
             }
         }
 
-        private static void RunSubMenu(int testCategory)
+        private static void ShowSubMenu(string category)
         {
-            string categoryName = GetCategoryName(testCategory);
-            bool returnToMain = false;
-
-            while (!returnToMain)
+            while (true)
             {
                 Console.Clear();
                 Console.WriteLine($"=============================================");
-                Console.WriteLine($"    {categoryName} - TEST EXECUTION MODE");
+                Console.WriteLine($"      {category} - TEST EXECUTION MODE");
                 Console.WriteLine($"=============================================");
-                Console.WriteLine("1. Run All Tests (RunAllTest)");
-                Console.WriteLine("2. Run By Manual Value Put (RunByManualValuePut)");
+                Console.WriteLine("1. Run All Tests");
+                Console.WriteLine("2. Run By Manual Value Input");
                 Console.WriteLine("3. Back to Main Menu");
                 Console.WriteLine("=============================================");
-                Console.Write("Enter your choice (1-3): ");
 
-                if (int.TryParse(Console.ReadLine(), out int modeChoice))
+                int mode = GetInt("Enter your choice (1-3): ");
+                if (mode == 3) break;
+
+                switch (mode)
                 {
-                    switch (modeChoice)
-                    {
-                        case 1:
-                            ExecuteTests(categoryName, "RunAllTest");
-                            break;
-                        case 2:
-                            ExecuteTests(categoryName, "RunByManualValuePut");
-                            break;
-                        case 3:
-                            returnToMain = true; // Exit submenu loop, return to main menu
-                            break;
-                        default:
-                            DisplayError("Invalid choice. Please try again.");
-                            break;
-                    }
-                }
-                else
-                {
-                    DisplayError("Invalid input. Please enter a number.");
+                    case 1:
+                        ExecuteTests(category, "RunAllTest");
+                        break;
+                    case 2:
+                        ExecuteTests(category, "RunByManualValuePut");
+                        break;
+                    default:
+                        ShowError("Invalid mode. Try again.");
+                        break;
                 }
             }
-        }
-
-        private static string GetCategoryName(int choice)
-        {
-            return choice switch
-            {
-                1 => "Personal Loan Test",
-                2 => "Home Loan Test",
-                3 => "FD Calculator Test",
-                4 => "Credit Card Test",
-                _ => "Unknown Test Category"
-            };
         }
 
         private static void ExecuteTests(string category, string mode)
         {
             Console.Clear();
-            Console.WriteLine($"\n--- EXECUTING TESTS ---");
-            Console.WriteLine($"Category: {category}");
-            Console.WriteLine($"Mode: {mode}");
+            Console.WriteLine($"--- EXECUTING {category} in {mode} mode ---\n");
 
-            // --- TEST EXECUTION LOGIC GOES HERE ---
-            // In a real application, you would use a test runner library (like NUnit Console Runner) 
-            // or directly call the methods from your test class (EmiCalculatorTests).
-
-            if (category == "Personal Loan Test" && mode == "RunAllTest")
+            IWebDriver driver = null;
+            try
             {
-                IWebDriver driver = null;
-                driver = WebDriverFactory.GetDriver("Chrome");
-                driver.Manage().Window.Maximize();
-
-                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/personal-loan-emi-calculator?cta=calculator-life-goal-card1");
-
-
-                PLTest tests = new PLTest(driver);
-                tests.RunAllTests();
-
-                Reporter.PrintSummary();
-            }
-            else if (category == "Personal Loan Test" && mode == "RunByManualValuePut")
-            {
-                IWebDriver driver = null;
-                driver = WebDriverFactory.GetDriver("Chrome");
-                driver.Manage().Window.Maximize();
-
-                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/personal-loan-emi-calculator?cta=calculator-life-goal-card1");
-
-                Console.WriteLine("=== Loan Details Input ===");
-
-                // Get Loan Amount
-                decimal loanAmount = GetDecimalInput("Enter Loan Amount (e.g., 50000): ");
-
-                // Get Interest Rate
-                decimal interestRate = GetDecimalInput("Enter Annual Interest Rate (%) (e.g., 9): ");
-
-                // Get Tenure in Months
-                int tenureMonths = GetIntInput("Enter Tenure in Months (e.g., 24): ");
-
-                string expectedEMI = GetStringInput("Enter Expected EMI (e.g., 25,939): ");
-
-
-                string loanStr = loanAmount.ToString("F2");
-                string rateStr = interestRate.ToString("F2");
-                string tenureStr = tenureMonths.ToString("F0");
-
-
-                PLTest tests = new PLTest(driver);
-                tests.RunTestFromUserDefineValue(loanStr, rateStr, tenureStr, expectedEMI);
-                Reporter.PrintSummary();
-
-                static decimal GetDecimalInput(string prompt)
+                if (category.Contains("Personal Loan"))
                 {
-                    decimal value;
-                    while (true)
-                    {
-                        Console.Write(prompt);
-                        if (decimal.TryParse(Console.ReadLine(), out value) && value > 0)
-                            return value;
-                        Console.WriteLine("Invalid input. Please enter a positive decimal.");
-                    }
+                    driver = InitDriver("https://www.axisbank.com/retail/calculators/personal-loan-emi-calculator?cta=calculator-life-goal-card1");
+                    var test = new PLTest(driver);
+                    if (mode == "RunAllTest")
+                        test.RunAllTests();
+                    else
+                        RunPersonalLoanManual(test);
+                }
+                else if (category.Contains("Home Loan"))
+                {
+                    driver = InitDriver("https://www.axisbank.com/retail/calculators/home-loan-emi-calculator?cta=calculator-life-goal-card2");
+                    var test = new HLTest(driver);
+                    if (mode == "RunAllTest")
+                        test.RunAllTests();
+                    else
+                        RunHomeLoanManual(test);
+                }
+                else if (category.Contains("FD Calculator"))
+                {
+                    driver = InitDriver("https://www.axisbank.com/retail/calculators/fd-calculator?cta=calculators-life-goal-card3");
+                    var test = new FDTests(driver);
+                    if (mode == "RunAllTest")
+                        test.RunAllTests();
+                    else
+                        RunFDManual(test);
+                }
+                else if (category.Contains("Credit Card"))
+                {
+                    Console.WriteLine("[INFO] Credit Card test logic pending...");
                 }
 
-                static int GetIntInput(string prompt)
-                {
-                    int value;
-                    while (true)
-                    {
-                        Console.Write(prompt);
-                        if (int.TryParse(Console.ReadLine(), out value) && value > 0)
-                            return value;
-                        Console.WriteLine("Invalid input. Please enter a positive integer.");
-                    }
-                }
-
-                static string GetStringInput(string prompt, bool allowEmpty = false)
-                {
-                    string input;
-                    while (true)
-                    {
-                        Console.Write(prompt);
-                        input = Console.ReadLine()?.Trim();
-
-                        if (!allowEmpty && string.IsNullOrEmpty(input))
-                        {
-                            Console.WriteLine("Input cannot be empty. Please try again.");
-                            continue;
-                        }
-
-                        return input;
-                    }
-                }
-
-
+                PrintColoredSummary();
             }
-            else if (category == "Home Loan Test" && mode == "RunAllTest")
+            catch (Exception ex)
             {
-                IWebDriver driver = null;
-                driver = WebDriverFactory.GetDriver("Chrome");
-                driver.Manage().Window.Maximize();
-
-                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/home-loan-emi-calculator?cta=calculator-life-goal-card2");
-
-
-                HLTest tests = new HLTest(driver);
-                tests.RunAllTests();
-
-                Reporter.PrintSummary();
+                ShowError($"Execution failed: {ex.Message}");
             }
-            else if (category == "Home Loan Test" && mode == "RunByManualValuePut")
+            finally
             {
-                IWebDriver driver = null;
-                driver = WebDriverFactory.GetDriver("Chrome");
-                driver.Manage().Window.Maximize();
-
-                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/home-loan-emi-calculator?cta=calculator-life-goal-card2");
-
-                Console.WriteLine("=== Loan Details Input ===");
-
-                // Get Loan Amount
-                decimal loanAmount = GetDecimalInput("Enter Loan Amount (e.g., 1000000): ");
-
-                // Get Interest Rate
-                decimal interestRate = GetDecimalInput("Enter Annual Interest Rate (%) (e.g., 9): ");
-
-                // Get Tenure in Months
-                int tenureMonths = GetIntInput("Enter Tenure in Years (e.g., 30): ");
-
-                string expectedEMI = GetStringInput("Enter Expected EMI (e.g., 8,046): ");
-
-
-                string loanStr = loanAmount.ToString();
-                string rateStr = interestRate.ToString();
-                string tenureStr = tenureMonths.ToString();
-
-
-                HLTest tests = new HLTest(driver);
-                tests.RunTestFromUserDefineValue(loanStr, rateStr, tenureStr, expectedEMI);
-                Reporter.PrintSummary();
-
-                static decimal GetDecimalInput(string prompt)
-                {
-                    decimal value;
-                    while (true)
-                    {
-                        Console.Write(prompt);
-                        if (decimal.TryParse(Console.ReadLine(), out value) && value > 0)
-                            return value;
-                        Console.WriteLine("Invalid input. Please enter a positive decimal.");
-                    }
-                }
-
-                static int GetIntInput(string prompt)
-                {
-                    int value;
-                    while (true)
-                    {
-                        Console.Write(prompt);
-                        if (int.TryParse(Console.ReadLine(), out value) && value > 0)
-                            return value;
-                        Console.WriteLine("Invalid input. Please enter a positive integer.");
-                    }
-                }
-
-                static string GetStringInput(string prompt, bool allowEmpty = false)
-                {
-                    string input;
-                    while (true)
-                    {
-                        Console.Write(prompt);
-                        input = Console.ReadLine()?.Trim();
-
-                        if (!allowEmpty && string.IsNullOrEmpty(input))
-                        {
-                            Console.WriteLine("Input cannot be empty. Please try again.");
-                            continue;
-                        }
-
-                        return input;
-                    }
-                }
+                driver?.Quit();
+                Console.WriteLine("\n[Execution Complete] Press any key to continue...");
+                Console.ReadKey(true);
             }
-            else if (category == "FD Calculator Test" && mode == "RunAllTest")
-            {
-                IWebDriver driver = null;
-                //driver = WebDriverFactory.GetDriver("Chrome");
-                //driver.Manage().Window.Maximize();
-
-                //driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/fd-calculator?cta=calculators-life-goal-card3");
-
-
-                FDTests tests = new FDTests(driver);
-                tests.RunAllTests();
-
-                Reporter.PrintSummary();
-            }
-            else if (category == "FD Calculator Test" && mode == "RunByManualValuePut")
-            {
-                IWebDriver driver = null;
-                driver = WebDriverFactory.GetDriver("Chrome");
-                driver.Manage().Window.Maximize();
-
-                driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/fd-calculator?cta=calculators-life-goal-card3");
-
-                Console.WriteLine("--- User Input for FD Program ---");
-
-                // 2. Prompt for and read the first input: TOC
-                Console.Write("Enter Type Of Customer (Ex: se, no): ");
-                string toc = Console.ReadLine();
-
-                // 3. Prompt for and read the second input: IPT
-                Console.Write("Enter value for Interest Payout Type (Ex: re, qu, mo, sh): ");
-                string ipt = Console.ReadLine();
-
-                // 4. Prompt for and read the third input: AD
-                Console.Write("Enter the value for AD (Ex: 5000): ");
-                string ad = Console.ReadLine();
-
-                // 5. Prompt for and read the fourth input: years
-                Console.Write("Enter the value for years (Ex: 1 to 10): ");
-                string years = Console.ReadLine();
-
-                // 6. Prompt for and read the fifth input: months
-                Console.Write("Enter the value for months (Ex: 1 to 11): ");
-                string months = Console.ReadLine();
-
-                // 7. Prompt for and read the sixth input: days
-                Console.Write("Enter the value for days: ");
-                string days = Console.ReadLine();
-
-
-                FDTests tests = new FDTests(driver);
-                //tests.Test_002_TestFromPredefinedValue(toc, ipt, ad, years, months, days);
-            }
-            else if (category == "Credit Card Test" && mode == "RunAllTest")
-            {
-                Console.WriteLine("Executing all defined Personal Loan EMI tests (e.g., BVA_001, BVA_002, CAL_001)...");
-                // Example of how to call a specific test if it were in a non-NUnit class:
-                // var runner = new EmiCalculatorTests();
-                // runner.BVA_001_VerifyMinimumLoanAmountCalculation();
-            }
-            else if (category == "Credit Card Test" && mode == "RunByManualValuePut")
-            {
-                Console.WriteLine("Executing specific test scenario by accepting manual inputs...");
-                // Example: Prompt user for Loan Amount, Rate, and Tenure here.
-            }
-            else
-            {
-                Console.WriteLine($"[MOCK] Test execution logic for {category} in {mode} mode is pending...");
-            }
-
-            Console.WriteLine("\n[Execution Complete] Press any key to continue to the submenu...");
-            Console.ReadKey(true);
         }
 
-        private static void DisplayError(string message)
+        #region Manual Input Handlers
+        private static void RunPersonalLoanManual(PLTest test)
+        {
+            Console.WriteLine("=== Enter Loan Details ===");
+            var loan = GetDecimal("Loan Amount: ").ToString("F2");
+            var rate = GetDecimal("Interest Rate (%): ").ToString("F2");
+            var tenure = GetInt("Tenure (months): ").ToString();
+            var expectedEMI = GetString("Expected EMI: ");
+            test.RunTestFromUserDefineValue(loan, rate, tenure, expectedEMI);
+        }
+
+        private static void RunHomeLoanManual(HLTest test)
+        {
+            Console.WriteLine("=== Enter Home Loan Details ===");
+            var loan = GetDecimal("Loan Amount: ").ToString("F2");
+            var rate = GetDecimal("Interest Rate (%): ").ToString("F2");
+            var tenure = GetInt("Tenure (years): ").ToString();
+            var expectedEMI = GetString("Expected EMI: ");
+            test.RunTestFromUserDefineValue(loan, rate, tenure, expectedEMI);
+        }
+
+        private static void RunFDManual(FDTests test)
+        {
+            Console.WriteLine("=== Enter FD Details ===");
+            var toc = GetString("Type Of Customer (se/no): ");
+            var ipt = GetString("Interest Payout Type (re/qu/mo/sh): ");
+            var ad = GetString("Amount Deposited: ");
+            var years = GetString("Years (1-10): ");
+            var months = GetString("Months (1-11): ");
+            var days = GetString("Days: ");
+            // test.Test_002_TestFromPredefinedValue(toc, ipt, ad, years, months, days);
+        }
+        #endregion
+
+        #region Helpers
+        private static IWebDriver InitDriver(string url)
+        {
+            var driver = WebDriverFactory.GetDriver("Chrome");
+            driver.Manage().Window.Maximize();
+            driver.Navigate().GoToUrl(url);
+            return driver;
+        }
+
+        private static int GetInt(string prompt)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                if (int.TryParse(Console.ReadLine(), out int val) && val > 0)
+                    return val;
+                Console.WriteLine("Invalid input. Please enter a positive number.");
+            }
+        }
+
+        private static decimal GetDecimal(string prompt)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                if (decimal.TryParse(Console.ReadLine(), out decimal val) && val > 0)
+                    return val;
+                Console.WriteLine("Invalid input. Please enter a positive number.");
+            }
+        }
+
+        private static string GetString(string prompt, bool allowEmpty = false)
+        {
+            while (true)
+            {
+                Console.Write(prompt);
+                string? input = Console.ReadLine()?.Trim();
+                if (!allowEmpty && string.IsNullOrEmpty(input))
+                {
+                    Console.WriteLine("Input cannot be empty.");
+                    continue;
+                }
+                return input!;
+            }
+        }
+
+        private static void ShowError(string message)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"\nERROR: {message}");
             Console.ResetColor();
-            Console.WriteLine("Press any key to return to the menu...");
+            Console.WriteLine("Press any key to continue...");
             Console.ReadKey(true);
         }
+
+        private static void PrintColoredSummary()
+        {
+            Console.WriteLine("\n================ TEST SUMMARY ================");
+            int passCount = Reporter.PassCount;
+            int failCount = Reporter.FailCount;
+            int skippedCount = Reporter.SkippedCount;
+
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"PASSED: {passCount}");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"FAILED: {failCount}");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"SKIPPED/ERROR: {skippedCount}");
+            Console.ResetColor();
+
+            Console.WriteLine("==============================================\n");
+        }
+        #endregion
     }
 }

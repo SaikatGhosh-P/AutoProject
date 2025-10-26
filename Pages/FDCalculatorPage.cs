@@ -93,7 +93,7 @@ namespace FDAutomationProject.Pages
             SelectElement ele = new SelectElement(InterestPayoutType);
             ele.SelectByValue("Monthly Payout");
 
-            Reporter.LogInfo("Monthly Payout Selected");
+            Reporter.LogInfo("Monthly Payout Selected:");
         }
 
         public void AmountDepositValuePut(int loanAmt)

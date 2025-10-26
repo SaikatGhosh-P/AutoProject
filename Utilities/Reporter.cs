@@ -8,8 +8,9 @@ namespace FDAutomationProject.Utilities
 {
     public class Reporter
     {
-        private static int PassCount = 0;
-        private static int FailCount = 0;
+        public static int PassCount = 0;
+        public static int FailCount = 0;
+        public static int SkippedCount = 0;
 
         public static void LogInfo(string message)
         {

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FDAutomationProject")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f5d3aa5d0e41b4addccdb8fad2f845947c7a8646")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8e596097f9efe3e7a1948e8de877d8ca4dca99e1")]
 [assembly: System.Reflection.AssemblyProductAttribute("FDAutomationProject")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FDAutomationProject")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
