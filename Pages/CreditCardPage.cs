@@ -35,7 +35,7 @@ namespace FDAutomationProject.Pages
             _driver = WebDriverFactory.GetDriver("Chrome");
             _driver.Manage().Window.Maximize();
 
-            _driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/fd-calculator?cta=calculators-life-goal-card3");
+            _driver.Navigate().GoToUrl("https://www.axisbank.com/retail/calculators/credit-card-emi-calculator");
 
         }
 
