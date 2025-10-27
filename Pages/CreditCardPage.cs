@@ -96,7 +96,7 @@ namespace FDAutomationProject.Pages
         public void GSTOnProcessingFee(string gstprocessingFee)
         {
             string expected = gstprocessingFee.ToString();
-            string readValue = _driver.FindElement(GSTonInst).Text;
+            string readValue = _driver.FindElement(GSTprocFee).Text;
 
             if (readValue != expected)
             {
@@ -171,7 +171,7 @@ namespace FDAutomationProject.Pages
         public void ReadTotalPayable(string totPay)
         {
             string expected = totPay.ToString();
-            string readValue = _driver.FindElement(interesrRate).Text;
+            string readValue = _driver.FindElement(totPayable).Text;
 
             if (readValue != expected)
             {
