@@ -57,7 +57,7 @@ namespace FDAutomationProject.Pages
         public void TenureSelection(int ten)
         {
             string yrS = ten.ToString();
-            IWebElement tenureDropdownTyp = _driver.FindElement(By.XPath("//select[@id='tenureYear']")); //reinvest type
+            IWebElement tenureDropdownTyp = _driver.FindElement(By.XPath($"{tenureMnth}")); //reinvest type
             SelectElement ele = new SelectElement(tenureDropdownTyp);
             ele.SelectByValue(yrS);
 
